@@ -21,6 +21,7 @@ def create_initial_admin(user: UserFirstAdmin, db: Session = Depends(get_db)):
     create_user_obj = UserCreate(
         username=user.username,
         password=user.password,
+        email=user.email,
         is_admin=True
     )
     return user_service.create_user(db=db, user=create_user_obj)

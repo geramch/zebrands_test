@@ -29,5 +29,8 @@ class CRUDUser:
     def get_admin_count(self, db: Session):
         return db.query(User).filter(User.is_admin == True).count()
 
+    def get_admin_emails(self, db: Session):
+        return db.query(User.email).filter(User.is_admin == True).all()
+
 
 user_service = CRUDUser()

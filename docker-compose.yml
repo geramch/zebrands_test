@@ -19,6 +19,11 @@ services:
     environment:
       - ENVIRONMENT=development
       - POSTGRESQL_URL=postgresql://postgres:zebrands-@db:5432/zebrands
+      - EMAIL_SENDER=email
+      - NAME_SENDER=name
+      - SES_ACCESS_KEY=aws_public_key
+      - SES_SECRET_KEY=aws_secret_key
+      - AWS_REGION=aws_region
     ports:
       - "9000:9000"
     command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "9000", "--reload"]
