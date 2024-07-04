@@ -28,12 +28,14 @@ class Product(ProductBase):
 class UserFirstAdmin(BaseModel):
     username: str
     password: str
+    email: str
 class UserBase(BaseModel):
     username: str
 
 class UserCreate(UserBase):
     username: str
     password: str
+    email: str
     is_admin: bool
 
 class UserUpdate(UserBase):

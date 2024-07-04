@@ -3,6 +3,8 @@ from sqlalchemy.orm import Session
 from typing import List
 
 from app.services.products_service import product_service
+from app.services.users_service import user_service
+from app.services.notification.ses_service import SESService
 from app.utils.schemas import *
 from app.db.utils import get_db
 from app.auth.auth import get_current_active_admin, get_current_active_user
@@ -42,10 +44,27 @@ def read_product(product_id: int, db: Session = Depends(get_db), current_user: U
 
 # Update an existing product by its ID (Admin only)
 @router.put("/{product_id}", response_model=ProductBase)
-def update_product_endpoint(product_id: int, product: ProductUpdate, db: Session = Depends(get_db), current_user: User = Depends(get_current_active_admin)):
+def update_product(product_id: int, product: ProductUpdate, db: Session = Depends(get_db), current_user: User = Depends(get_current_active_admin)):
     db_product = product_service.update_product(db=db, product_id=product_id, product=product)
     if db_product is None:
         raise HTTPException(status_code=404, detail="Product not found")
+
+    admin_emails = user_service.get_admin_emails(db=db)
+
+    for email in admin_emails:
+        try:
+            SESService.send_email(
+                recipient=email,
+                subject="Product Updated",
+                template_name="update_template",
+                product_id=str(product_id),
+                product_name=product.name,
+                updated_by=current_user.username
+            )
+        except Exception as e:
+            print(f"Failed to send email to {email}: {e}")
+            continue
+
     return db_product
 
 # Delete a product by its ID (Admin only)
