@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: zebrands
+      POSTGRES_PASSWORD: zebrands-
+    ports:
+      - 5433:5432
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  web:
+    build: .
+    environment:
+      - ENVIRONMENT=development
+      - POSTGRESQL_URL=postgresql://postgres:zebrands-@db:5432/zebrands
+    ports:
+      - "9000:9000"
+    command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "9000", "--reload"]
+    volumes:
+      - .:/app
+    depends_on:
+      db:
+        condition: service_healthy
