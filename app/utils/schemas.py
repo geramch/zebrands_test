@@ -6,6 +6,10 @@ class ProductBase(BaseModel):
     name: str
     price: float
     brand: str
+    query_count: Optional[int] = 0  # Inicializado a 0 por defecto
+
+    class Config:
+        orm_mode = True
 
 class ProductCreate(ProductBase):
     pass

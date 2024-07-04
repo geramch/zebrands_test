@@ -19,6 +19,7 @@ class Products(Base):
     name = Column(String)
     price = Column(Float)
     brand = Column(String)
+    query_count = Column(Integer)
 
 class User(Base):
     __tablename__ = "users"

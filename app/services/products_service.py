@@ -13,7 +13,7 @@ class CRUDProducts:
 
     # Create a new product
     def create_product(self, db: Session, product: ProductCreate):
-        db_product = Products(sku=product.sku, name=product.name, price=product.price, brand=product.brand)
+        db_product = Products(sku=product.sku, name=product.name, price=product.price, brand=product.brand, query_count=0)
         db.add(db_product)
         db.commit()
         db.refresh(db_product)
@@ -37,6 +37,14 @@ class CRUDProducts:
             return None
         db.delete(db_product)
         db.commit()
+        return db_product
+
+    def increment_query_count(self, db: Session, product_id: int):
+        db_product = db.query(Products).filter(Products.id == product_id).first()
+        if db_product:
+            db_product.query_count += 1
+            db.commit()
+            db.refresh(db_product)
         return db_product
 
 # Instance of CRUDProducts to be used in the routes
